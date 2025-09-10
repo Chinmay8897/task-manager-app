@@ -29,3 +29,6 @@ node_modules/
 
 # Uploads
 uploads/
+
+FRONTEND_UX_IMPROVEMENTS.md
+HEADER_FOOTER_DOCUMENTATION.md
