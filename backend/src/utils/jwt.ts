@@ -1,37 +1,23 @@
 import jwt from 'jsonwebtoken';
-import { AuthTokenPayload } from '../types';
 
 export class JWTUtil {
-  private static secret = process.env.JWT_SECRET || 'fallback-secret-key';
-  private static expiresIn = process.env.JWT_EXPIRES_IN || '7d';
-  private static refreshExpiresIn = process.env.JWT_REFRESH_EXPIRES_IN || '30d';
+  private static secret: string = process.env.JWT_SECRET || 'fallback-secret-key';
 
   static generateToken(payload: { userId: string; email: string }): string {
-    return jwt.sign(payload, this.secret, {
-      expiresIn: this.expiresIn,
-      issuer: 'task-manager-app',
-      audience: 'task-manager-users'
-    });
+    return jwt.sign(payload, this.secret, { expiresIn: '7d' });
   }
 
   static generateRefreshToken(payload: { userId: string }): string {
-    return jwt.sign(payload, this.secret, {
-      expiresIn: this.refreshExpiresIn,
-      issuer: 'task-manager-app',
-      audience: 'task-manager-refresh'
-    });
+    return jwt.sign(payload, this.secret, { expiresIn: '30d' });
   }
 
-  static verifyToken(token: string): AuthTokenPayload {
+  static verifyToken(token: string): any {
     try {
-      return jwt.verify(token, this.secret, {
-        issuer: 'task-manager-app',
-        audience: 'task-manager-users'
-      }) as AuthTokenPayload;
-    } catch (error) {
-      if (error instanceof jwt.TokenExpiredError) {
+      return jwt.verify(token, this.secret);
+    } catch (error: any) {
+      if (error?.name === 'TokenExpiredError') {
         throw new Error('Token has expired');
-      } else if (error instanceof jwt.JsonWebTokenError) {
+      } else if (error?.name === 'JsonWebTokenError') {
         throw new Error('Invalid token');
       } else {
         throw new Error('Token verification failed');
@@ -39,37 +25,27 @@ export class JWTUtil {
     }
   }
 
-  static verifyRefreshToken(token: string): { userId: string } {
+  static verifyRefreshToken(token: string): any {
     try {
-      return jwt.verify(token, this.secret, {
-        issuer: 'task-manager-app',
-        audience: 'task-manager-refresh'
-      }) as { userId: string };
-    } catch (error) {
+      return jwt.verify(token, this.secret);
+    } catch (error: any) {
       throw new Error('Invalid refresh token');
     }
   }
 
-  static decodeToken(token: string): AuthTokenPayload | null {
+  static decodeToken(token: string): any {
     try {
-      return jwt.decode(token) as AuthTokenPayload;
-    } catch (error) {
+      return jwt.decode(token);
+    } catch (error: any) {
       return null;
     }
   }
 
   static isTokenExpired(token: string): boolean {
     const decoded = this.decodeToken(token);
-    if (!decoded) return true;
+    if (!decoded || !decoded.exp) return true;
 
     const currentTime = Math.floor(Date.now() / 1000);
     return decoded.exp < currentTime;
-  }
-
-  static getTokenExpirationDate(token: string): Date | null {
-    const decoded = this.decodeToken(token);
-    if (!decoded) return null;
-
-    return new Date(decoded.exp * 1000);
   }
 }
