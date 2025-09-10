@@ -8,10 +8,10 @@ export const handleValidationErrors = (req: Request, res: Response, next: NextFu
     return res.status(400).json({
       success: false,
       message: 'Validation failed',
-      errors: errors.array().map(error => ({
-        field: error.type === 'field' ? error.path : error.type,
+      errors: errors.array().map((error: any) => ({
+        field: error.path || error.param || 'unknown',
         message: error.msg,
-        value: error.type === 'field' ? error.value : undefined
+        value: error.value
       }))
     });
   }
