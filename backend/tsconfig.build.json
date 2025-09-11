@@ -21,8 +21,7 @@
     "strictNullChecks": false,
     "strictPropertyInitialization": false,
     "noImplicitOverride": false,
-    "exactOptionalPropertyTypes": false,
-    "suppressImplicitAnyIndexErrors": true
+    "exactOptionalPropertyTypes": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "src/**/*.test.ts", "src/**/*.spec.ts"]
