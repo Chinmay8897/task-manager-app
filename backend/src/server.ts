@@ -74,18 +74,25 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 
+// Basic health check (no database required)
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Task Manager API is running!', 
+    timestamp: new Date().toISOString(),
+    status: 'healthy'
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({
-    message: 'Task Manager API is running!',
+  res.json({ 
+    message: 'Task Manager API is running!', 
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
     corsOrigin: req.headers.origin,
     frontendUrl: process.env.FRONTEND_URL
   });
-});
-
-// Error handling middleware
+});// Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('❌ Server Error:', err.message);
 
@@ -115,8 +122,19 @@ app.use((req, res) => {
 // Start server
 const startServer = async () => {
   try {
+    console.log('🔄 Starting server...');
+    console.log('🔧 Environment variables check:');
+    console.log(`   NODE_ENV: ${process.env.NODE_ENV}`);
+    console.log(`   PORT: ${process.env.PORT}`);
+    console.log(`   MONGODB_URI: ${process.env.MONGODB_URI ? 'Set' : 'Not set'}`);
+    console.log(`   FRONTEND_URL: ${process.env.FRONTEND_URL}`);
+    
+    console.log('🔌 Connecting to database...');
     await connectDatabase();
-    app.listen(PORT, () => {
+    console.log('✅ Database connected successfully');
+    
+    console.log('🚀 Starting HTTP server...');
+    const server = app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
       console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL}`);
@@ -129,9 +147,23 @@ const startServer = async () => {
         process.env.FRONTEND_URL
       ].filter(Boolean);
       allowedOrigins.forEach(origin => console.log(`   - ${origin}`));
+      console.log('✅ Server startup completed successfully!');
     });
+
+    // Graceful shutdown
+    process.on('SIGTERM', () => {
+      console.log('🛑 SIGTERM received, shutting down gracefully');
+      server.close(() => {
+        console.log('✅ Server closed');
+        process.exit(0);
+      });
+    });
+
   } catch (error) {
     console.error('❌ Failed to start server:', error);
+    if (error instanceof Error) {
+      console.error('❌ Error details:', error.stack);
+    }
     process.exit(1);
   }
 };
