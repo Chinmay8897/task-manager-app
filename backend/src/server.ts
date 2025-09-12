@@ -23,30 +23,41 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:5173',
       'http://localhost:5174',
+      'https://task-manager-app-ruddy-zeta.vercel.app',
+      'https://task-manager-app.vercel.app',
       process.env.FRONTEND_URL
     ].filter(Boolean);
 
+    console.log(`🔍 CORS Check - Origin: ${origin}, Allowed: ${allowedOrigins.join(', ')}`);
+
     if (!origin || allowedOrigins.includes(origin)) {
+      console.log('✅ CORS: Origin allowed');
       callback(null, true);
     } else {
+      console.log('❌ CORS: Origin blocked');
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Cache-Control',
+    'Pragma'
+  ],
+  exposedHeaders: ['Authorization'],
+  preflightContinue: false,
   optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
-// Enable preflight for all routes without using wildcard
-app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    cors(corsOptions)(req, res, next);
-  } else {
-    next();
-  }
-});
+
+// Simple preflight handling
+app.options('*', cors(corsOptions));
 
 // Rate limiting
 const limiter = rateLimit({
@@ -65,12 +76,34 @@ app.use('/api/tasks', taskRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ message: 'Task Manager API is running!', timestamp: new Date().toISOString() });
+  res.json({
+    message: 'Task Manager API is running!',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    corsOrigin: req.headers.origin,
+    frontendUrl: process.env.FRONTEND_URL
+  });
 });
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('❌ Server Error:', err);
+  console.error('❌ Server Error:', err.message);
+
+  if (err.message === 'Not allowed by CORS') {
+    console.error(`❌ CORS Error - Origin: ${req.headers.origin}, Frontend URL: ${process.env.FRONTEND_URL}`);
+    return res.status(403).json({
+      message: 'CORS policy violation',
+      origin: req.headers.origin,
+      allowedOrigins: [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'https://task-manager-app-ruddy-zeta.vercel.app',
+        'https://task-manager-app.vercel.app',
+        process.env.FRONTEND_URL
+      ].filter(Boolean)
+    });
+  }
+
   res.status(500).json({ message: 'Internal server error' });
 });
 
@@ -85,6 +118,17 @@ const startServer = async () => {
     await connectDatabase();
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+      console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL}`);
+      console.log(`✅ Allowed CORS origins:`);
+      const allowedOrigins = [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'https://task-manager-app-ruddy-zeta.vercel.app',
+        'https://task-manager-app.vercel.app',
+        process.env.FRONTEND_URL
+      ].filter(Boolean);
+      allowedOrigins.forEach(origin => console.log(`   - ${origin}`));
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
