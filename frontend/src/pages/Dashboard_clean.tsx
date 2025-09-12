@@ -63,12 +63,15 @@ const Dashboard: React.FC = () => {
     setFilteredTasks(filtered);
   };
 
-  const handleCreateTask = async (taskData: CreateTaskData) => {
+  const handleCreateTask = async (taskData: CreateTaskData | UpdateTaskData) => {
     try {
-      const response = await taskService.createTask(taskData);
-      setTasks(prev => [response.task, ...prev]);
-      setShowTaskForm(false);
-      toast.success('Task created successfully');
+      // Type guard to ensure it's CreateTaskData for new tasks
+      if ('title' in taskData && typeof taskData.title === 'string') {
+        const response = await taskService.createTask(taskData as CreateTaskData);
+        setTasks(prev => [response.task, ...prev]);
+        setShowTaskForm(false);
+        toast.success('Task created successfully');
+      }
     } catch (error) {
       toast.error('Failed to create task');
     }

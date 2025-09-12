@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Flag, FileText, Save } from 'lucide-react';
+import { Calendar, Flag, FileText, Save } from 'lucide-react';
 import type { Task, CreateTaskData, UpdateTaskData } from '../../types/task.types';
-import Button from '../UI/Button';
 import Input from '../UI/Input';
 import Modal from '../UI/Modal';
 

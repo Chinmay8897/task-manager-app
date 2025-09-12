@@ -89,15 +89,6 @@ const TaskList: React.FC<TaskListProps> = ({
     return filtered;
   }, [tasks, searchTerm, statusFilter, priorityFilter, sortField, sortOrder]);
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortOrder('asc');
-    }
-  };
-
   const clearFilters = () => {
     setSearchTerm('');
     setStatusFilter('all');
@@ -330,7 +321,6 @@ const TaskList: React.FC<TaskListProps> = ({
               onToggle={onTaskToggle}
               onEdit={onTaskEdit}
               onDelete={onTaskDelete}
-              viewMode={viewMode}
             />
           ))
         )}
