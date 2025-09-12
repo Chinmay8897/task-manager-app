@@ -76,8 +76,8 @@ app.use('/api/tasks', taskRoutes);
 
 // Basic health check (no database required)
 app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Task Manager API is running!', 
+  res.json({
+    message: 'Task Manager API is running!',
     timestamp: new Date().toISOString(),
     status: 'healthy'
   });
@@ -85,8 +85,8 @@ app.get('/', (req, res) => {
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    message: 'Task Manager API is running!', 
+  res.json({
+    message: 'Task Manager API is running!',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
     corsOrigin: req.headers.origin,
@@ -128,11 +128,11 @@ const startServer = async () => {
     console.log(`   PORT: ${process.env.PORT}`);
     console.log(`   MONGODB_URI: ${process.env.MONGODB_URI ? 'Set' : 'Not set'}`);
     console.log(`   FRONTEND_URL: ${process.env.FRONTEND_URL}`);
-    
+
     console.log('🔌 Connecting to database...');
     await connectDatabase();
     console.log('✅ Database connected successfully');
-    
+
     console.log('🚀 Starting HTTP server...');
     const server = app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
