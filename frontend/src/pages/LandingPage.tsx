@@ -15,12 +15,12 @@ import PublicLayout from '../components/Layout/PublicLayout';
 const LandingPage: React.FC = () => {
   const handleLoginClick = () => {
     // Navigate to login page
-    console.log('Navigate to login');
+    // TODO: Implement navigation to login
   };
 
   const handleSignupClick = () => {
     // Navigate to signup page
-    console.log('Navigate to signup');
+    // TODO: Implement navigation to signup
   };
 
   const features = [

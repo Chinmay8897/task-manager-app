@@ -3,10 +3,13 @@ import { toast } from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-console.log('🔧 API Configuration:', {
-  baseURL: API_BASE_URL,
-  environment: import.meta.env.MODE
-});
+// Only log in development mode
+if (import.meta.env.DEV) {
+  console.log('🔧 API Configuration:', {
+    baseURL: API_BASE_URL,
+    environment: import.meta.env.MODE
+  });
+}
 
 // Create axios instance with default config
 export const api = axios.create({
@@ -21,7 +24,9 @@ export const api = axios.create({
 // Request interceptor for API calls
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`);
+    if (import.meta.env.DEV) {
+      console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`);
+    }
 
     const token = localStorage.getItem('token');
     if (token) {
@@ -31,7 +36,9 @@ api.interceptors.request.use(
     return config;
   },
   (error: AxiosError) => {
-    console.error('❌ API Request Error:', error);
+    if (import.meta.env.DEV) {
+      console.error('❌ API Request Error:', error);
+    }
     return Promise.reject(error);
   }
 );
@@ -39,16 +46,20 @@ api.interceptors.request.use(
 // Response interceptor for API calls
 api.interceptors.response.use(
   (response: AxiosResponse) => {
-    console.log(`✅ API Response: ${response.status} ${response.config.url}`);
+    if (import.meta.env.DEV) {
+      console.log(`✅ API Response: ${response.status} ${response.config.url}`);
+    }
     return response;
   },
   async (error: AxiosError) => {
-    console.error('❌ API Response Error:', {
-      message: error.message,
-      status: error.response?.status,
-      url: error.config?.url,
-      code: error.code
-    });
+    if (import.meta.env.DEV) {
+      console.error('❌ API Response Error:', {
+        message: error.message,
+        status: error.response?.status,
+        url: error.config?.url,
+        code: error.code
+      });
+    }
 
     // Handle CORS errors
     if (error.message.includes('CORS') || error.response?.status === 0) {

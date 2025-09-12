@@ -51,8 +51,6 @@ const Login: React.FC = () => {
           <div className="mt-8 p-4 bg-gray-50 rounded-lg">
             <h3 className="text-sm font-medium text-gray-700 mb-2"></h3>
             <p className="text-xs text-gray-600">
-              <strong></strong><br />
-              <strong>:</strong>
             </p>
           </div>
         </div>

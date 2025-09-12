@@ -3,23 +3,22 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Tasks from './pages/Tasks';
 import CreateTask from './pages/CreateTask';
-import Calendar from './pages/Calendar';
-import Analytics from './pages/Analytics';
-import Team from './pages/Team';
 import Favorites from './pages/Favorites';
 import Settings from './pages/Settings';
 import './index.css';
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <Router>
-        <div className="App">
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router>
+          <div className="App">
           {/* Toast Notifications */}
           <Toaster
             position="top-right"
@@ -78,30 +77,6 @@ const App: React.FC = () => {
               }
             />
             <Route
-              path="/calendar"
-              element={
-                <ProtectedRoute>
-                  <Calendar />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/analytics"
-              element={
-                <ProtectedRoute>
-                  <Analytics />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/team"
-              element={
-                <ProtectedRoute>
-                  <Team />
-                </ProtectedRoute>
-              }
-            />
-            <Route
               path="/favorites"
               element={
                 <ProtectedRoute>
@@ -127,6 +102,7 @@ const App: React.FC = () => {
         </div>
       </Router>
     </AuthProvider>
+    </ErrorBoundary>
   );
 };
 

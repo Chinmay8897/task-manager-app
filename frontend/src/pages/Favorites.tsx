@@ -1,10 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import Layout from '../components/Layout/Layout';
+import TaskForm from '../components/Task/TaskForm';
 import { Star, Plus, Search } from 'lucide-react';
+import type { CreateTaskData, UpdateTaskData } from '../types/task.types';
+import { taskService } from '../services/tasks';
 
 const Favorites: React.FC = () => {
+  const [showTaskForm, setShowTaskForm] = useState(false);
+
+  const handleCreateTask = async (taskData: CreateTaskData | UpdateTaskData) => {
+    try {
+      await taskService.createTask(taskData as CreateTaskData);
+      setShowTaskForm(false);
+      toast.success('Task created successfully');
+    } catch (error) {
+      console.error('Create task error:', error);
+      toast.error('Failed to create task');
+    }
+  };
   return (
-    <Layout>
+    <Layout onCreateTask={() => setShowTaskForm(true)}>
       <div className="space-y-6">
         {/* Page Header */}
         <div className="flex justify-between items-center">
@@ -32,15 +48,26 @@ const Favorites: React.FC = () => {
                 <Star className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No favorites yet</h3>
                 <p className="text-gray-600 mb-4">Mark important tasks as favorites for quick access</p>
-                <button className="btn-primary flex items-center space-x-2">
+                <button
+                  onClick={() => setShowTaskForm(true)}
+                  className="btn-primary flex items-center space-x-2"
+                >
                   <Plus className="h-4 w-4" />
-                  <span>Browse Tasks</span>
+                  <span>Create Task</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Task Form Modal */}
+      {showTaskForm && (
+        <TaskForm
+          onSubmit={handleCreateTask}
+          onClose={() => setShowTaskForm(false)}
+        />
+      )}
     </Layout>
   );
 };

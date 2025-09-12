@@ -179,31 +179,6 @@ export const filterTasks = (
 };
 
 /**
- * Generate task statistics
- */
-export const generateTaskStats = (tasks: Task[]) => {
-  const total = tasks.length;
-  const pending = tasks.filter(t => t.status === 'pending').length;
-  const completed = tasks.filter(t => t.status === 'completed').length;
-  const overdue = tasks.filter(isTaskOverdue).length;
-
-  const priorityBreakdown = {
-    high: tasks.filter(t => t.priority === 'high').length,
-    medium: tasks.filter(t => t.priority === 'medium').length,
-    low: tasks.filter(t => t.priority === 'low').length,
-  };
-
-  return {
-    total,
-    pending,
-    completed,
-    overdue,
-    completionRate: calculateCompletionRate(tasks),
-    priorityBreakdown,
-  };
-};
-
-/**
  * Debounce function for search inputs
  */
 export const debounce = <T extends (...args: any[]) => any>(

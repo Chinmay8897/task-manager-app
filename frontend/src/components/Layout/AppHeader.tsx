@@ -9,9 +9,7 @@ import {
   User,
   LogOut,
   Plus,
-  Home,
-  Calendar,
-  BarChart3
+  Home
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -43,13 +41,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Implement search functionality
-    console.log('Searching for:', searchQuery);
+    // TODO: Add search functionality
   };
 
   const quickActions = [
-    { name: 'Dashboard', icon: Home, href: '/dashboard' },
-    { name: 'Calendar', icon: Calendar, href: '/calendar' },
-    { name: 'Analytics', icon: BarChart3, href: '/analytics' }
+    { name: 'Dashboard', icon: Home, href: '/dashboard' }
   ];
 
   return (

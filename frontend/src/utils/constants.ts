@@ -15,7 +15,6 @@ export const ROUTES = {
   TASKS: '/tasks',
   PROFILE: '/profile',
   SETTINGS: '/settings',
-  ANALYTICS: '/analytics',
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
 } as const;
@@ -117,7 +116,6 @@ export const SUCCESS_MESSAGES = {
 export const FEATURES = {
   DARK_MODE: true,
   NOTIFICATIONS: true,
-  ANALYTICS: true,
   EXPORT: true,
   BULK_OPERATIONS: true,
   TASK_TEMPLATES: false,
@@ -189,5 +187,4 @@ export const ENV = {
   APP_NAME: import.meta.env.VITE_APP_NAME || 'Task Manager',
   APP_VERSION: import.meta.env.VITE_APP_VERSION || '1.0.0',
   SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN,
-  ANALYTICS_ID: import.meta.env.VITE_ANALYTICS_ID,
 } as const;

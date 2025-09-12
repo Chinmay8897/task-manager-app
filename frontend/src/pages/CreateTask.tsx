@@ -1,10 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import Layout from '../components/Layout/Layout';
+import TaskForm from '../components/Task/TaskForm';
 import { Plus, Calendar, Flag, Users } from 'lucide-react';
+import type { CreateTaskData, UpdateTaskData } from '../types/task.types';
+import { taskService } from '../services/tasks';
 
 const CreateTask: React.FC = () => {
+  const [showTaskForm, setShowTaskForm] = useState(false);
+
+  const handleCreateTask = async (taskData: CreateTaskData | UpdateTaskData) => {
+    try {
+      await taskService.createTask(taskData as CreateTaskData);
+      setShowTaskForm(false);
+      toast.success('Task created successfully');
+    } catch (error) {
+      console.error('Create task error:', error);
+      toast.error('Failed to create task');
+    }
+  };
   return (
-    <Layout>
+    <Layout onCreateTask={() => setShowTaskForm(true)}>
       <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
         {/* Page Header */}
         <div>
@@ -92,6 +108,14 @@ const CreateTask: React.FC = () => {
           </form>
         </div>
       </div>
+
+      {/* Task Form Modal */}
+      {showTaskForm && (
+        <TaskForm
+          onSubmit={handleCreateTask}
+          onClose={() => setShowTaskForm(false)}
+        />
+      )}
     </Layout>
   );
 };

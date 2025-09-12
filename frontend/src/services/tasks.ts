@@ -13,25 +13,6 @@ export interface TaskResponse {
   message: string;
 }
 
-export interface TaskStatsResponse {
-  stats: {
-    total: number;
-    pending: number;
-    completed: number;
-    overdue: number;
-    completionRate: number;
-    priorityBreakdown: {
-      high: number;
-      medium: number;
-      low: number;
-    };
-    recentActivity: {
-      tasksCreatedThisWeek: number;
-      tasksCompletedThisWeek: number;
-    };
-  };
-}
-
 export const taskService = {
   // Get all tasks with optional filters
   getTasks: async (params?: {
@@ -84,12 +65,6 @@ export const taskService = {
   // Toggle task status (pending <-> completed)
   toggleTaskStatus: async (id: string): Promise<TaskResponse> => {
     const response = await api.patch(`/tasks/${id}/toggle`);
-    return response.data;
-  },
-
-  // Get task statistics
-  getTaskStats: async (): Promise<TaskStatsResponse> => {
-    const response = await api.get('/tasks/stats/summary');
     return response.data;
   },
 

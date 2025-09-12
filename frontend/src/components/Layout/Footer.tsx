@@ -16,7 +16,7 @@ const Footer: React.FC = () => {
                 <div className="h-6 w-6 sm:h-8 sm:w-8 bg-primary-600 rounded-lg flex items-center justify-center">
                   <CheckSquare className="h-3 w-3 sm:h-5 sm:w-5 text-white" aria-hidden="true" />
                 </div>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900">TaskManager</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">Task Manager</h2>
               </div>
               <p className="text-gray-600 text-sm max-w-md mx-auto px-4">
                 Streamline your workflow and boost productivity with our intuitive task management platform.
