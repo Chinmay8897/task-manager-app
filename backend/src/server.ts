@@ -12,7 +12,7 @@ import taskRoutes from './routes/tasks';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = parseInt(process.env.PORT || '5000', 10);
 
 // Security middleware
 app.use(helmet());
@@ -119,22 +119,31 @@ app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
 
-// Start server
+// Start server with comprehensive error handling
 const startServer = async () => {
   try {
-    console.log('🔄 Starting server...');
+    console.log('🔄 Starting server initialization...');
     console.log('🔧 Environment variables check:');
-    console.log(`   NODE_ENV: ${process.env.NODE_ENV}`);
-    console.log(`   PORT: ${process.env.PORT}`);
-    console.log(`   MONGODB_URI: ${process.env.MONGODB_URI ? 'Set' : 'Not set'}`);
-    console.log(`   FRONTEND_URL: ${process.env.FRONTEND_URL}`);
+    console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'undefined'}`);
+    console.log(`   PORT: ${process.env.PORT || 'undefined'}`);
+    console.log(`   MONGODB_URI: ${process.env.MONGODB_URI ? 'Set ✅' : 'Not set ❌'}`);
+    console.log(`   JWT_SECRET: ${process.env.JWT_SECRET ? 'Set ✅' : 'Not set ❌'}`);
+    console.log(`   FRONTEND_URL: ${process.env.FRONTEND_URL || 'undefined'}`);
+
+    // Validate required environment variables
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is required');
+    }
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET environment variable is required');
+    }
 
     console.log('🔌 Connecting to database...');
     await connectDatabase();
     console.log('✅ Database connected successfully');
 
     console.log('🚀 Starting HTTP server...');
-    const server = app.listen(PORT, () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
       console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL}`);
@@ -150,22 +159,45 @@ const startServer = async () => {
       console.log('✅ Server startup completed successfully!');
     });
 
+    // Error handling for server
+    server.on('error', (error: any) => {
+      console.error('❌ Server error:', error);
+      if (error.code === 'EADDRINUSE') {
+        console.error(`❌ Port ${PORT} is already in use`);
+      }
+      process.exit(1);
+    });
+
     // Graceful shutdown
-    process.on('SIGTERM', () => {
-      console.log('🛑 SIGTERM received, shutting down gracefully');
+    const gracefulShutdown = (signal: string) => {
+      console.log(`🛑 ${signal} received, shutting down gracefully`);
       server.close(() => {
         console.log('✅ Server closed');
         process.exit(0);
       });
+    };
+
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+    // Handle uncaught exceptions
+    process.on('uncaughtException', (error) => {
+      console.error('❌ Uncaught Exception:', error);
+      process.exit(1);
+    });
+
+    process.on('unhandledRejection', (reason, promise) => {
+      console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+      process.exit(1);
     });
 
   } catch (error) {
     console.error('❌ Failed to start server:', error);
     if (error instanceof Error) {
-      console.error('❌ Error details:', error.stack);
+      console.error('❌ Error message:', error.message);
+      console.error('❌ Error stack:', error.stack);
     }
+    console.error('❌ Exiting process with code 1');
     process.exit(1);
   }
-};
-
-startServer();
+};startServer();
